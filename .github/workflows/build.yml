@@ -21,14 +21,23 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
 
-      - name: Install Python Dependencies
+      - name: Install Python Dependencies & p4a
         run: |
           pip install --upgrade pip
-          pip install Cython==0.29.33 requests kivy
+          pip install Cython==0.29.33 requests kivy python-for-android
 
-      - name: Build APK via p4s
+      - name: Build APK via python-for-android
         run: |
-          p4s create --private . --package=org.test.camerabackup --name="Camera Backup" --version=0.1 --bootstrap=sdl2 --requirements=python3,kivy,requests --orientation=portrait --permissions=INTERNET,READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE --arch=arm64-v8a --sdk-dir=/home/runner/.buildozer/android/platform/android-sdk --ndk-dir=/home/runner/.buildozer/android/platform/android-ndk-r25b || python3 -m pythonforandroid.toolchain create --private . --package=org.test.camerabackup --name="Camera Backup" --version=0.1 --bootstrap=sdl2 --requirements=python3,kivy,requests --dir=.
+          python3 -m pythonforandroid.toolchain create \
+            --private . \
+            --package=org.test.camerabackup \
+            --name="Camera Backup" \
+            --version=0.1 \
+            --bootstrap=sdl2 \
+            --requirements=python3,kivy,requests \
+            --orientation=portrait \
+            --permissions=INTERNET,READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE \
+            --arch=arm64-v8a
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
